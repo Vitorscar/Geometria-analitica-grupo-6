@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gradiente Térmico de Ilhas de Calor Urbanas</title>
+<style>
+:root{--bg:#fbf7f1;--card:#fff;--tx:#2a2420;--mu:#6b5f56;--r1:#2f8f5b;--r2:#d9482b;--ac:#e8912d;--bd:#e6dccf;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17130f;--card:#241e18;--tx:#f3ebe1;--mu:#b3a698;--r1:#4fc283;--r2:#ff7a5c;--ac:#f2a443;--bd:#3a3128;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#17130f;--card:#241e18;--tx:#f3ebe1;--mu:#b3a698;--r1:#4fc283;--r2:#ff7a5c;--ac:#f2a443;--bd:#3a3128;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.6 Georgia,"Times New Roman",serif}
+h1,h2,h3,nav,button,.tag{font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--bd);display:flex;gap:4px;overflow-x:auto;padding:10px 14px;font-size:14px}
+nav a{color:var(--mu);text-decoration:none;padding:4px 10px;border-radius:99px;white-space:nowrap}
+nav a:hover{background:var(--card);color:var(--tx)}
+section{max-width:860px;margin:0 auto;padding:56px 20px}
+.hero{min-height:80vh;display:flex;flex-direction:column;justify-content:center}
+.tag{color:var(--ac);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:13px}
+h1{font-size:clamp(34px,7vw,60px);line-height:1.05;margin:.3em 0}
+h2{font-size:clamp(26px,5vw,36px);margin:0 0 .5em}
+h3{margin:1.2em 0 .3em}
+p.sub{color:var(--mu);font-size:19px;max-width:620px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px 20px}
+.c1{border-top:4px solid var(--r1)}.c2{border-top:4px solid var(--r2)}
+.eq{font:600 20px/1.5 "Cambria Math",Cambria,Georgia,serif;background:var(--card);border:1px solid var(--bd);border-left:4px solid var(--ac);border-radius:8px;padding:10px 16px;margin:10px 0;overflow-x:auto}
+.r1{color:var(--r1)}.r2{color:var(--r2)}
+table{border-collapse:collapse;width:100%;background:var(--card);border-radius:10px;overflow:hidden;font-family:system-ui,sans-serif;font-size:15px}
+th,td{padding:9px 12px;border-bottom:1px solid var(--bd);text-align:center}th{background:var(--bd)}
+.note{font-size:15px;color:var(--mu);border-left:3px solid var(--bd);padding-left:12px;margin:14px 0}
+.wrap{overflow-x:auto}
+svg{width:100%;height:auto;display:block;background:var(--card);border:1px solid var(--bd);border-radius:12px}
+svg text{fill:var(--mu);font:12px system-ui,sans-serif}
+input[type=range]{width:100%;accent-color:var(--ac)}
+.out{display:flex;gap:12px;flex-wrap:wrap;font-family:system-ui,sans-serif;margin-top:8px}
+.out span{flex:1;min-width:140px;background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:8px 12px}
+.opt{display:block;width:100%;text-align:left;margin:8px 0;padding:12px 14px;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:10px;font-size:16px;cursor:pointer}
+.opt:hover{border-color:var(--ac)}.opt.ok{background:var(--r1);color:#fff;border-color:var(--r1)}.opt.no{background:var(--r2);color:#fff;border-color:var(--r2)}
+.hid{display:none}.show{display:block}
+footer{text-align:center;color:var(--mu);padding:40px 20px;font-size:14px}
+</style>
+</head>
+<body>
+<nav>
+<a href="#inicio">Início</a><a href="#contexto">Contexto</a><a href="#dados">Dados</a><a href="#equacoes">Equações</a><a href="#segmentaria">Segmentária</a><a href="#intersecao">24 °C</a><a href="#grafico">Gráfico</a><a href="#enem">ENEM</a><a href="#sombras">Sombras</a><a href="#fim">Conclusão</a>
+</nav>
+
+<section id="inicio" class="hero">
+<span class="tag">Matemática · Geometria Analítica</span>
+<h1>Gradiente Térmico de Ilhas de Calor Urbanas</h1>
+<p class="sub">Amortecimento de temperatura a partir do centro histórico impermeabilizado, modelado com retas no plano cartesiano.</p>
+</section>
+
+<section id="contexto">
+<span class="tag">1 · Contexto</span>
+<h2>Por que o centro da cidade é mais quente?</h2>
+<p>Ilhas de calor são fenômenos climáticos antrópicos: as zonas centrais das metrópoles ficam sensivelmente mais quentes que as áreas periurbanas. Analisamos a temperatura do ar <b>y</b> (°C) em função da distância ao marco zero da cidade <b>x</b> (km).</p>
+<div class="grid">
+<div class="card c1"><h3 class="r1" style="margin-top:0">Reta 1 · Avenida arborizada</h3><p>Cinturões verdes e corpos hídricos. Reta decrescente de declividade branda (m₁ &lt; 0, suave). A evapotranspiração foliar e o calor específico da água distribuem o arrefecimento ao longo de muitos quilômetros.</p></div>
+<div class="card c2"><h3 class="r2" style="margin-top:0">Reta 2 · Eixo asfaltado</h3><p>Cânions contínuos de asfalto e concreto, sem vegetação. Reta decrescente de declividade abrupta (m₂ ≪ 0). Materiais de alta capacidade térmica acumulam calor no centro e perdem influência de repente quando o tecido urbano denso termina.</p></div>
+</div>
+</section>
+
+<section id="dados">
+<span class="tag">2 · Modelo</span>
+<h2>Dados hipotéticos</h2>
+<p>Os valores abaixo são um exemplo construído para os cálculos, não medições reais de uma cidade.</p>
+<div class="wrap"><table>
+<tr><th>Distância</th><th class="r1">Arborizada</th><th class="r2">Asfaltada</th></tr>
+<tr><td>0 km</td><td>32 °C</td><td>36 °C</td></tr>
+<tr><td>1 km</td><td>31 °C</td><td>32 °C</td></tr>
+<tr><td>2 km</td><td>30 °C</td><td>28 °C</td></tr>
+<tr><td>3 km</td><td>29 °C</td><td>24 °C</td></tr>
+<tr><td>4 km</td><td>28 °C</td><td>20 °C</td></tr>
+</table></div>
+</section>
+
+<section id="equacoes">
+<span class="tag">3 · Equações</span>
+<h2>Coeficiente angular e forma geral</h2>
+<p>Forma reduzida: <b>y = mx + n</b>, com <b>m</b> a inclinação e <b>n</b> a temperatura no centro.</p>
+<h3 class="r1">Reta 1</h3>
+<div class="eq">m₁ = (30 − 32) / (2 − 0) = −1<br>y = −x + 32 &nbsp;⇒&nbsp; <span class="r1">x + y − 32 = 0</span></div>
+<p>A = 1, B = 1, C = −32.</p>
+<h3 class="r2">Reta 2</h3>
+<div class="eq">m₂ = (28 − 36) / (2 − 0) = −4<br>y = −4x + 36 &nbsp;⇒&nbsp; <span class="r2">4x + y − 36 = 0</span></div>
+<p>A = 4, B = 1, C = −36.</p>
+<p class="note">A reta 2 cai quatro vezes mais rápido em módulo: é o “degrau térmico” do asfalto.</p>
+</section>
+
+<section id="segmentaria">
+<span class="tag">4 · Forma segmentária</span>
+<h2>Raio crítico p</h2>
+<p>Forma segmentária: <b>x/p + y/q = 1</b>, em que p e q são as interseções com os eixos.</p>
+<div class="eq"><span class="r1">Reta 1: x/32 + y/32 = 1 &nbsp;⇒ p₁ = 32 km</span><br><span class="r2">Reta 2: x/9 + y/36 = 1 &nbsp;⇒ p₂ = 9 km</span></div>
+<p class="note">Nestes interceptos a extrapolação linear chega a 0 °C, o que não é o fim real da ilha de calor. Em termos práticos, o raio crítico é melhor definido pelo limiar de conforto (24 °C), na próxima seção.</p>
+</section>
+
+<section id="intersecao">
+<span class="tag">5 · Limiar de conforto</span>
+<h2>Interseção com y = 24 °C</h2>
+<div class="grid">
+<div class="card c1"><b class="r1">Arborizada</b><div class="eq">24 = −x + 32<br>x = 8 km<br>P₁ = (8, 24)</div></div>
+<div class="card c2"><b class="r2">Asfaltada</b><div class="eq">24 = −4x + 36<br>x = 3 km<br>P₂ = (3, 24)</div></div>
+</div>
+<p><b>Resultado:</b> a avenida arborizada atinge 24 °C a 8 km do centro; a asfaltada, a 3 km. Diferença: <b>5 km</b>.</p>
+<p class="note">Os 24 °C são a referência estipulada no enunciado do trabalho. Conforto térmico real depende de umidade, vento, radiação e fatores individuais, então não o apresente como limite universal da OMS.</p>
+</section>
+
+<section id="grafico">
+<span class="tag">6 · Gráfico interativo</span>
+<h2>As duas retas no plano</h2>
+<svg id="g" viewBox="0 0 600 330" role="img" aria-label="Gráfico das retas de temperatura por distância"></svg>
+<input type="range" id="sl" min="0" max="10" step="0.1" value="2" aria-label="Distância do centro">
+<div class="out"><span>Distância: <b id="d">2.0</b> km</span><span class="r1">Arborizada: <b id="t1"></b> °C</span><span class="r2">Asfaltada: <b id="t2"></b> °C</span></div>
+<p class="note">As linhas são extrapolações matemáticas: a reta asfaltada deixa de ser realista a grandes distâncias.</p>
+</section>
+
+<section id="enem">
+<span class="tag">7 · Questão estilo ENEM</span>
+<h2>Em que km morar?</h2>
+<p>Uma pesquisa hipotética analisou duas avenidas. A arborizada tem 32 °C no centro e queda de 1 °C por km (y = −x + 32). A sem árvores tem 36 °C e queda de 4 °C por km (y = −4x + 36). Um cidadão quer morar na avenida sem árvores onde a temperatura seja igual à encontrada a 2 km do centro na avenida arborizada. A distância deverá ser:</p>
+<div id="q1"></div>
+<div id="r-q1" class="eq hid">Arborizada a 2 km: y = −2 + 32 = 30 °C.<br>Asfaltada: 30 = −4x + 36 ⇒ 4x = 6 ⇒ x = 1,5 km.<br><b>Alternativa C.</b></div>
+</section>
+
+<section id="sombras">
+<span class="tag">8 · Parte 2</span>
+<h2>Geometria das sombras: ponto de ônibus × árvore</h2>
+<p>Com o Sol a um ângulo θ, o comprimento da sombra de um objeto de altura h é <b>L = h / tan θ</b>. Altura do ponto: 3 m. Altura da árvore: 5 m.</p>
+<input type="range" id="ang" min="15" max="80" step="1" value="45" aria-label="Ângulo do Sol">
+<div class="out"><span>Sol: <b id="av">45</b>°</span><span>Ponto: <b id="lp"></b> m</span><span>Árvore: <b id="la"></b> m</span></div>
+<svg id="s" viewBox="0 0 600 220" style="margin-top:12px" role="img" aria-label="Sombras do ponto e da árvore"></svg>
+<div class="eq">A 45°: raio solar do ponto: y = −x + 3 · da árvore: y = −x + 5<br>Mesma inclinação (m = −1), alturas iniciais diferentes.</div>
+<p class="note">Sombra de copa é irregular e deixa passar parte da radiação; a cobertura rígida bloqueia direto. Conforto real também depende de ventilação, materiais e umidade.</p>
+<h3>Questão</h3>
+<p>Um ponto de 3 m projeta sombra de 3 m e uma árvore de 5 m projeta 5 m, com a mesma inclinação solar. A diferença ocorre principalmente porque:</p>
+<div id="q2"></div>
+</section>
+
+<section id="fim">
+<span class="tag">Conclusão</span>
+<h2>Matemática a serviço da cidade</h2>
+<p>A geometria analítica permite representar fenômenos ambientais por equações. A avenida asfaltada apresenta redução térmica abrupta; a arborizada, resfriamento gradual. A análise das retas e de suas interseções relaciona matemática, urbanização e sustentabilidade, evidenciando a importância do planejamento urbano e das áreas verdes.</p>
+<div class="wrap"><table>
+<tr><th>Integrante</th><th>Parte</th></tr>
+<tr><td>1</td><td>Introdução às ilhas de calor</td></tr>
+<tr><td>2</td><td>Avenidas e dados térmicos</td></tr>
+<tr><td>3</td><td>Coeficientes angulares e equações</td></tr>
+<tr><td>4</td><td>Forma geral, segmentária e raio crítico</td></tr>
+<tr><td>5</td><td>Interseção com 24 °C e questão ENEM</td></tr>
+</table></div>
+</section>
+<footer>Dados hipotéticos para fins didáticos · Seminário de Geometria Analítica</footer>
+
+<script>
+const $=id=>document.getElementById(id);
+const X=x=>50+x*52, Y=y=>300-(y-14)*11.5;
+function draw(){
+ let s='<defs><clipPath id="c"><rect x="50" y="20" width="520" height="280"/></clipPath></defs>';
+ for(let x=0;x<=10;x+=2)s+=`<line x1="${X(x)}" x2="${X(x)}" y1="20" y2="300" stroke="currentColor" opacity=".12"/><text x="${X(x)}" y="318" text-anchor="middle">${x} km</text>`;
+ for(let y=16;y<=36;y+=4)s+=`<line x1="50" x2="570" y1="${Y(y)}" y2="${Y(y)}" stroke="currentColor" opacity=".12"/><text x="42" y="${Y(y)+4}" text-anchor="end">${y}°</text>`;
+ s+=`<line x1="50" x2="570" y1="${Y(24)}" y2="${Y(24)}" stroke="#e8912d" stroke-dasharray="6 4" stroke-width="2"/><text x="565" y="${Y(24)-6}" text-anchor="end" style="fill:#e8912d">24 °C</text>`;
+ s+=`<g clip-path="url(#c)"><line x1="${X(0)}" y1="${Y(32)}" x2="${X(10)}" y2="${Y(22)}" stroke="var(--r1)" stroke-width="3"/><line x1="${X(0)}" y1="${Y(36)}" x2="${X(10)}" y2="${Y(-4)}" stroke="var(--r2)" stroke-width="3"/></g>`;
+ s+=`<circle cx="${X(8)}" cy="${Y(24)}" r="5" fill="var(--r1)"/><circle cx="${X(3)}" cy="${Y(24)}" r="5" fill="var(--r2)"/><text x="${X(8)+8}" y="${Y(24)+16}">P₁ (8; 24)</text><text x="${X(3)+8}" y="${Y(24)-8}">P₂ (3; 24)</text>`;
+ s+=`<g id="m"></g>`;$('g').innerHTML=s;upd();
+}
+function upd(){
+ const x=+$('sl').value,a=32-x,b=36-4*x;
+ $('d').textContent=x.toFixed(1);$('t1').textContent=a.toFixed(1);$('t2').textContent=b.toFixed(1);
+ let m=`<line x1="${X(x)}" x2="${X(x)}" y1="20" y2="300" stroke="currentColor" opacity=".4"/>`;
+ m+=`<circle cx="${X(x)}" cy="${Y(a)}" r="6" fill="var(--r1)"/>`;
+ if(b>=14)m+=`<circle cx="${X(x)}" cy="${Y(b)}" r="6" fill="var(--r2)"/>`;
+ $('m').innerHTML=m;
+}
+function shadows(){
+ const t=+$('ang').value,r=t*Math.PI/180,lp=3/Math.tan(r),la=5/Math.tan(r),k=22;
+ $('av').textContent=t;$('lp').textContent=lp.toFixed(2);$('la').textContent=la.toFixed(2);
+ const g=180,bx=40,by=g,bx2=bx+Math.min(la,12)*k,ax=40;
+ const px=40,tx=40;
+ let s=`<line x1="10" x2="590" y1="${g}" y2="${g}" stroke="currentColor" opacity=".4" stroke-width="2"/>`;
+ // ponto (esquerda x=40) e árvore (x=300)
+ const p0=40,a0=300,w=Math.min(lp,12)*k/ (lp>12?lp/12:1);
+ const lpx=Math.min(lp*k,230),lax=Math.min(la*k,280);
+ s+=`<rect x="${p0}" y="${g-3*k}" width="8" height="${3*k}" fill="var(--mu)"/><rect x="${p0-6}" y="${g-3*k-4}" width="40" height="6" fill="var(--mu)"/>`;
+ s+=`<line x1="${p0+4}" y1="${g-3*k}" x2="${p0+4+lpx}" y2="${g}" stroke="var(--ac)" stroke-dasharray="4 3"/><line x1="${p0+4}" x2="${p0+4+lpx}" y1="${g}" y2="${g}" stroke="var(--r2)" stroke-width="6" opacity=".7"/>`;
+ s+=`<rect x="${a0}" y="${g-3*k}" width="8" height="${3*k}" fill="#8a5a2b"/><ellipse cx="${a0+4}" cy="${g-4*k}" rx="30" ry="${k*1.5}" fill="var(--r1)"/>`;
+ s+=`<line x1="${a0+4}" y1="${g-5*k}" x2="${a0+4+Math.min(lax,260)}" y2="${g}" stroke="var(--ac)" stroke-dasharray="4 3"/><line x1="${a0+4}" x2="${a0+4+Math.min(lax,260)}" y1="${g}" y2="${g}" stroke="var(--r1)" stroke-width="6" opacity=".7"/>`;
+ s+=`<text x="${p0}" y="${g+22}">Ponto (3 m)</text><text x="${a0}" y="${g+22}">Árvore (5 m)</text>`;
+ $('s').innerHTML=s;
+}
+function quiz(id,opts,ans,res){
+ const el=$(id);opts.forEach((o,i)=>{const b=document.createElement('button');b.className='opt';b.textContent=o;
+ b.onclick=()=>{[...el.children].forEach(c=>c.classList.remove('ok','no'));b.classList.add(i===ans?'ok':'no');if(i===ans&&res)$(res).classList.add('show')};el.appendChild(b)});
+}
+quiz('q1',['A) 0,5 km','B) 1 km','C) 1,5 km','D) 2 km','E) 3 km'],2,'r-q1');
+quiz('q2',['A) A árvore possui maior coeficiente angular.','B) O ponto de ônibus apresenta maior temperatura.','C) A árvore possui maior altura, mantendo-se o mesmo ângulo solar.','D) A sombra da árvore não pode ser representada geometricamente.','E) A inclinação dos raios solares depende exclusivamente da vegetação.'],2);
+$('sl').oninput=upd;$('ang').oninput=shadows;draw();shadows();
+</script>
+</body>
+</html>
